@@ -7,7 +7,7 @@ test('xmlNodes', function(t) {
   
   t.plan(1)
 
-  fs.createReadStream(__dirname + '/../example/mrss.xml')
+  fs.createReadStream(__dirname + '/mrss.xml')
     .pipe(xmlNodes('item'))
     .on('data', function(data) {
       ++count
@@ -17,4 +17,14 @@ test('xmlNodes', function(t) {
       t.end()
     })
 })
-  
+
+test('nested nodes', function(t) {
+  t.plan(2)
+
+  fs.createReadStream(__dirname + '/nested.xml')
+    .pipe(xmlNodes('item'))
+    .on('data', function(chunk) {
+      var test = /\n<\/item>$/.test(chunk)
+      t.ok(test, 'does not split on nested node')
+    })
+})

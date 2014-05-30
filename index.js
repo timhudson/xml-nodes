@@ -30,14 +30,46 @@ XmlNodes.prototype._transform = function(chunk, encoding, done) {
 
 XmlNodes.prototype.getNodes = function(nodes) {
   var node = this.soFar.slice(this.soFar.indexOf('<'+this.nodeName))
-    , closeIndex = !!~(closeIndex = node.indexOf('</'+this.nodeName+'>')) ? closeIndex + this.nodeName.length + 3 : 0
+    , nestedCount = this.getNestedCount(node)
+    , closeIndex = this.getClosingIndex(node, nestedCount)
 
   nodes = nodes || []
 
-  if (!closeIndex)
+  if (!~closeIndex)
     return nodes
 
   nodes.push(node.slice(0, closeIndex))
   this.soFar = node.slice(closeIndex)
   return this.getNodes(nodes)
+}
+
+XmlNodes.prototype.getNestedCount = function(node) {
+  var closingIndex = node.indexOf('</'+this.nodeName+'>')
+    , currentIndex = 1
+    , count = 0
+
+  while (currentIndex < closingIndex) {
+    currentIndex = node.indexOf('<'+this.nodeName, currentIndex + 1)
+
+    if (currentIndex === -1) break
+    if (currentIndex < closingIndex) count++
+  }
+
+  return count
+}
+
+XmlNodes.prototype.getClosingIndex = function(node, nestedCount) {
+  var currentIndex = node.indexOf('</'+this.nodeName+'>')
+    , currentCount = 0
+
+  while (currentCount !== nestedCount) {
+    currentIndex = node.indexOf('</'+this.nodeName+'>', currentIndex + 1)
+
+    if (currentIndex === -1) break
+    currentCount++
+  }
+
+  if (currentIndex === -1) return currentIndex
+
+  return currentIndex + this.nodeName.length + 3
 }
