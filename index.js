@@ -29,41 +29,58 @@ XmlNodes.prototype._transform = function(chunk, encoding, done) {
 }
 
 XmlNodes.prototype.getNodes = function(nodes) {
-  var node = this.soFar.slice(this.soFar.indexOf('<'+this.nodeName))
-    , nestedCount = this.getNestedCount(node)
-    , closeIndex = this.getClosingIndex(node, nestedCount)
-
   nodes = nodes || []
 
-  if (!~closeIndex)
-    return nodes
+  var openingIndex = this.getOpeningIndex(this.soFar)
 
-  nodes.push(node.slice(0, closeIndex))
-  this.soFar = node.slice(closeIndex)
+  if (openingIndex === -1) return nodes
+
+  var str = this.soFar.slice(openingIndex)
+    , nestedCount = this.getNestedCount(str)
+    , closingIndex = this.getClosingIndex(str, nestedCount)
+
+  if (closingIndex === -1) return nodes
+
+  nodes.push(str.slice(0, closingIndex))
+  this.soFar = str.slice(closingIndex)
   return this.getNodes(nodes)
 }
 
-XmlNodes.prototype.getNestedCount = function(node) {
-  var closingIndex = node.indexOf('</'+this.nodeName+'>')
-    , currentIndex = 1
+XmlNodes.prototype.getNestedCount = function(str) {
+  var openingIndex = this.getOpeningIndex(str)
+    , firstClosingIndex = str.indexOf('</'+this.nodeName+'>')
+    , currentIndex = openingIndex + 1
     , count = 0
 
-  while (currentIndex < closingIndex) {
-    currentIndex = node.indexOf('<'+this.nodeName, currentIndex + 1)
+  if (!firstClosingIndex) return false
+
+  while (currentIndex < firstClosingIndex) {
+    currentIndex = this.getOpeningIndex(str, currentIndex + 1)
 
     if (currentIndex === -1) break
-    if (currentIndex < closingIndex) count++
+    if (currentIndex < firstClosingIndex) count++
   }
 
   return count
 }
 
-XmlNodes.prototype.getClosingIndex = function(node, nestedCount) {
-  var currentIndex = node.indexOf('</'+this.nodeName+'>')
+XmlNodes.prototype.getOpeningIndex = function(str, i) {
+  var withoutAttr = str.indexOf('<'+this.nodeName+'>', i)
+    , withAttr = str.indexOf('<'+this.nodeName+' ', i)
+
+  if (withoutAttr > -1 && withAttr === -1) return withoutAttr
+  if (withAttr > -1 && withoutAttr === -1) return withAttr
+  if (withAttr === -1 && withoutAttr === -1) return -1
+
+  return withAttr > withoutAttr ? withAttr : withoutAttr
+}
+
+XmlNodes.prototype.getClosingIndex = function(str, nestedCount) {
+  var currentIndex = str.indexOf('</'+this.nodeName+'>')
     , currentCount = 0
 
   while (currentCount !== nestedCount) {
-    currentIndex = node.indexOf('</'+this.nodeName+'>', currentIndex + 1)
+    currentIndex = str.indexOf('</'+this.nodeName+'>', currentIndex + 1)
 
     if (currentIndex === -1) break
     currentCount++
