@@ -8,8 +8,6 @@ module.exports = function(nodeName) {
 function XmlNodes(nodeName) {
   this.nodeName = nodeName
   this.soFar = ''
-  this.openBracketRegex = new RegExp('<(?=' + this.nodeName + ')')
-  this.startsWithNodeName = new RegExp('^' + this.nodeName)
   Transform.call(this)
 }
 
