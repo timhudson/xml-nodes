@@ -1,6 +1,6 @@
 {
   "name": "xml-nodes",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Streaming XML node splitter",
   "repository": {
     "type": "git",
