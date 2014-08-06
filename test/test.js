@@ -28,3 +28,15 @@ test('nested nodes', function(t) {
       t.ok(test, 'does not split on nested node')
     })
 })
+
+test('self-closing tags', function(t) {
+  t.plan(3)
+
+  fs.createReadStream(__dirname + '/self-closing-tags.xml')
+    .pipe(xmlNodes('vehicle'))
+    .on('data', function(chunk) {
+      fs.writeFileSync('./duder', chunk)
+      var isSelfClosing = /\/>$/.test(chunk)
+      t.ok(isSelfClosing, 'splits self-closing tags')
+    })
+})

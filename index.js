@@ -74,6 +74,9 @@ XmlNodes.prototype.getOpeningIndex = function(str, i) {
 }
 
 XmlNodes.prototype.getClosingIndex = function(str, nestedCount) {
+  var isSelfClosing = /^\<[^/\>]+(?=\/\>)/.test(str)
+  if (isSelfClosing) return str.indexOf('/>') + 2
+
   var currentIndex = str.indexOf('</'+this.nodeName+'>')
     , currentCount = 0
 
