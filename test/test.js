@@ -40,3 +40,16 @@ test('self-closing tags', function(t) {
       t.ok(isSelfClosing, 'splits self-closing tags')
     })
 })
+
+test('order', function(t) {
+  t.plan(3)
+
+  var orderedIds = ['5131', '1406', '5005']
+
+  fs.createReadStream(__dirname + '/self-closing-tags.xml')
+    .pipe(xmlNodes('vehicle'))
+    .on('data', function(chunk) {
+      var hasNextId = RegExp('id="' + orderedIds.shift() + '"').test(chunk)
+      t.ok(hasNextId, 'emits chunks in order')
+    })
+})

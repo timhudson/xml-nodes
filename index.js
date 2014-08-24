@@ -19,7 +19,7 @@ XmlNodes.prototype._transform = function(chunk, encoding, done) {
   this.soFar += String(chunk)
   nodes = this.getNodes()
 
-  for (var i = nodes.length - 1; i >= 0; i--) {
+  for (var i = 0; i < nodes.length; i++) {
     this.push(nodes[i])
   }
 
