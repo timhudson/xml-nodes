@@ -35,7 +35,6 @@ test('self-closing tags', function(t) {
   fs.createReadStream(__dirname + '/self-closing-tags.xml')
     .pipe(xmlNodes('vehicle'))
     .on('data', function(chunk) {
-      fs.writeFileSync('./duder', chunk)
       var isSelfClosing = /\/>$/.test(chunk)
       t.ok(isSelfClosing, 'splits self-closing tags')
     })
