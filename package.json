@@ -30,5 +30,8 @@
   "author": {
     "name": "Tim Hudson",
     "email": "tim.hudson15@gmail.com"
+  },
+  "dependencies": {
+    "buffertools": "^2.1.2"
   }
 }
