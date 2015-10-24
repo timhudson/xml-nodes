@@ -1,5 +1,5 @@
 var request = require('request')
-  , xmlNodes = require('../index.js')
+var xmlNodes = require('../index.js')
 
 request('http://news.yahoo.com/rss/entertainment')
   .pipe(xmlNodes('item'))
